@@ -1,0 +1,140 @@
+:root {
+  /* Paleta True Dark / Neutral Premium */
+  --bg-color: #0a0a0a;
+  /* Fundo da tela (Preto quase absoluto) */
+  --card-bg: #171717;
+  /* Fundo dos cards (Cinza chumbo neutro) */
+  --border-color: #262626;
+  /* Bordas mais neutras */
+
+  /* Textos */
+  --text-main: #f5f5f5;
+  /* Branco mais suave */
+  --text-muted: #a3a3a3;
+  /* Cinza médio para subtítulos */
+  --text-dark: #d4d4d4;
+
+  /* Cores de Ação */
+  --primary: #f59e0b;
+  /* Seu Âmbar/Amarelo */
+  --primary-hover: #d97706;
+  --success: #22c55e;
+
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Estrutura Mobile First do App */
+#root {
+  width: 100%;
+  max-width: 480px;
+  /* Mantém o formato de celular mesmo no PC */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--bg-color);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  /* Sombra sutil nas laterais quando visto no PC */
+}
+
+/* Tipografia Base */
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+p {
+  color: var(--text-muted);
+}
+
+/* Blocos de Layout (Gerais) */
+.header {
+  padding: 1.5rem;
+  padding-bottom: 2rem;
+  background: linear-gradient(180deg, var(--card-bg) 0%, var(--bg-color) 100%);
+}
+
+.header-title {
+  color: var(--primary);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.main-content {
+  flex: 1;
+  padding: 0 1rem 6rem 1rem;
+  /* Espaçamento inferior para a nav bar não cobrir o conteúdo */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Navegação Inferior (Bottom Nav) - Mantida para todas as telas */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.75rem 0;
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  /* iOS safe area */
+  z-index: 50;
+}
+
+@media (min-width: 480px) {
+  .bottom-nav {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+  }
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.2s;
+}
+
+.nav-item.active {
+  color: var(--primary);
+}
+
+.nav-item svg {
+  width: 24px;
+  height: 24px;
+}
