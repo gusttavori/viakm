@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useFuelLogic } from '../hooks/useFuelLogic';
 import { AlertTriangle, PlusCircle, X, ChevronRight, Droplet } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import './Calculator.css'; // Certifique-se de importar o CSS
+import './Calculator.css';
 
 export default function Calculator() {
   const {
@@ -24,7 +24,13 @@ export default function Calculator() {
     e.preventDefault();
     if (!modalValor || !modalLitros || !modalOdometro) return;
 
-    await saveRefuel(modalValor, modalLitros, modalOdometro);
+    // ⚠️ CORREÇÃO CRÍTICA: Converte string para número antes de salvar no DB
+    await saveRefuel(
+      Number(modalValor),
+      Number(modalLitros),
+      Number(modalOdometro)
+    );
+
     setIsModalOpen(false);
     setModalValor('');
     setModalLitros('');
@@ -62,6 +68,7 @@ export default function Calculator() {
               <span className="input-prefix">R$</span>
               <input
                 type="number"
+                inputMode="decimal" /* Força teclado numérico no celular */
                 className="input-field-premium with-prefix"
                 placeholder="0,00"
                 value={ethanolPrice}
@@ -77,6 +84,7 @@ export default function Calculator() {
               <span className="input-prefix">R$</span>
               <input
                 type="number"
+                inputMode="decimal"
                 className="input-field-premium with-prefix"
                 placeholder="0,00"
                 value={gasolinePrice}
@@ -115,6 +123,7 @@ export default function Calculator() {
                     <label className="input-label-premium text-center">Km/L Etanol</label>
                     <input
                       type="number"
+                      inputMode="decimal"
                       className="input-field-premium text-center"
                       placeholder="Ex: 8.5"
                       value={ethanolKm}
@@ -126,6 +135,7 @@ export default function Calculator() {
                     <label className="input-label-premium text-center">Km/L Gasolina</label>
                     <input
                       type="number"
+                      inputMode="decimal"
                       className="input-field-premium text-center"
                       placeholder="Ex: 11.2"
                       value={gasolineKm}
@@ -189,15 +199,17 @@ export default function Calculator() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="modal-overlay-premium"
+              style={{ zIndex: 90 }}
               onClick={() => setIsModalOpen(false)}
             />
-            <div className="modal-wrapper">
+            <div className="modal-wrapper" style={{ zIndex: 100 }}>
               <motion.div
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
                 className="modal-content-premium"
+                style={{ maxHeight: '85vh', display: 'flex', flexDirection: 'column' }}
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="modal-drag-handle"></div>
@@ -209,11 +221,16 @@ export default function Calculator() {
                   </button>
                 </div>
 
-                <form onSubmit={handleRegister} className="modal-form custom-scrollbar">
+                <form
+                  onSubmit={handleRegister}
+                  className="modal-form custom-scrollbar"
+                  style={{ overflowY: 'auto', paddingBottom: '1rem', flex: 1 }}
+                >
                   <div className="input-group-premium">
                     <label className="input-label-premium">Valor Total (R$)</label>
                     <input
                       type="number"
+                      inputMode="decimal"
                       className="input-field-premium"
                       required
                       step="0.01"
@@ -226,6 +243,7 @@ export default function Calculator() {
                     <label className="input-label-premium">Litros Abastecidos</label>
                     <input
                       type="number"
+                      inputMode="decimal"
                       className="input-field-premium"
                       required
                       step="0.01"
@@ -238,6 +256,7 @@ export default function Calculator() {
                     <label className="input-label-premium">Odômetro Atual (Km)</label>
                     <input
                       type="number"
+                      inputMode="decimal"
                       className="input-field-premium"
                       required
                       step="0.1"
@@ -252,6 +271,7 @@ export default function Calculator() {
                     whileTap={{ scale: 0.98 }}
                     type="submit"
                     className="btn-primary-premium"
+                    style={{ marginTop: '1.5rem', marginBottom: '1rem' }}
                   >
                     Salvar Registro
                     <ChevronRight size={20} />

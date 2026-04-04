@@ -2,35 +2,40 @@ import { useState, useEffect } from 'react';
 import { db } from '../db/db';
 import { Clock, Fuel, MapPin, Gauge, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
-import './History.css'; // Importando o CSS exclusivo
+import './History.css';
 
 export default function History() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
     const fetchHistory = async () => {
-      // Calculate consumption for each record using the previous one
-      const chronological = await db.abastecimentos.orderBy('odometro').toArray();
+      try {
+        const chronological = await db.abastecimentos.orderBy('odometro').toArray();
 
-      const processed = chronological.map((record, index) => {
-        let consumo = null;
-        if (index > 0) {
-          const prev = chronological[index - 1];
-          const kmDiff = record.odometro - prev.odometro;
-          if (kmDiff > 0 && prev.litros > 0) {
-            consumo = (kmDiff / prev.litros).toFixed(1);
+        const processed = chronological.map((record, index) => {
+          let consumo = null;
+          if (index > 0) {
+            const prev = chronological[index - 1];
+            // Garante operação matemática segura convertendo para Number
+            const kmDiff = Number(record.odometro) - Number(prev.odometro);
+            const litrosUsados = Number(prev.litros);
+
+            if (kmDiff > 0 && litrosUsados > 0) {
+              consumo = (kmDiff / litrosUsados).toFixed(1);
+            }
           }
-        }
-        return { ...record, consumo };
-      });
+          return { ...record, consumo };
+        });
 
-      // Reverse to show newest first
-      setHistory(processed.reverse());
+        setHistory(processed.reverse());
+      } catch (error) {
+        console.error("Erro ao processar o histórico:", error);
+      }
     };
+
     fetchHistory();
   }, []);
 
-  // Variáveis de animação para a lista em cascata
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -81,7 +86,9 @@ export default function History() {
 
                 <div className="history-row top-row">
                   <div className="history-date">
-                    <span className="date-text">{new Date(item.data).toLocaleDateString('pt-BR')}</span>
+                    <span className="date-text">
+                      {item.data ? new Date(item.data).toLocaleDateString('pt-BR') : 'Sem data'}
+                    </span>
                   </div>
                   <div className="history-price">
                     R$ {Number(item.valor).toFixed(2)}
